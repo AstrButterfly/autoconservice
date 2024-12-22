@@ -25,7 +25,6 @@ class User {
 
     public function notify($message) {
         // Відправка письма
-
         error_log("Відправка повідомлення на {$this->email}: $message\n", 3, "notifications.log");
     }
     
@@ -64,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $notificationManager = new NotificationManager();
-        $notificationManager->loadSubscribers('subscribers.json');
+        $notificationManager->loadSubscribers('data/subscribers.json');
 
         $notificationManager->notifySubscribers($data['message']);
         

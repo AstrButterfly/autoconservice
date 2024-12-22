@@ -9,6 +9,13 @@ const AdminPanel = () => {
   const [newEmail, setNewEmail] = useState("");
   const [newPhones, setNewPhones] = useState(["", ""]);
   const [newsletterMessage, setNewsletterMessage] = useState("");
+  const [reviews, setReviews] = useState([]);
+  const [file, setFile] = useState(null);
+  const [newReview, setNewReview] = useState({
+    text: "",
+    stars: 5,
+    photo: "",
+  });
 
   const [contacts, setContacts] = useState({
     phone1: "",
@@ -32,6 +39,72 @@ const AdminPanel = () => {
         console.error("Помилка при відправці повідовлення:", error);
         alert("Виникла помилка при відправці повідовлення.");
       });
+  };
+  useEffect(() => {
+    if (authenticated) {
+      fetchReviews();
+    }
+  }, [authenticated]);
+
+  const fetchReviews = () => {
+    axios
+      .get(`${API_URL}/reviews.php`)
+      .then((response) => {
+        setReviews(response.data);
+      })
+      .catch((error) => console.error("Error fetching reviews:", error));
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile.size > 1024 * 1024) {
+      alert("Розмір файлу повинен бути меньше 1 МБ");
+      return;
+    }
+    const validFormats = ["image/jpeg", "image/png", "image/gif"];
+    if (!validFormats.includes(selectedFile.type)) {
+      alert("Файл повинен бути формату (JPEG, PNG, GIF)");
+      return;
+    }
+    setFile(selectedFile);
+  };
+
+  const addReview = async () => {
+    if (!newReview.text.trim() || !file) {
+      alert("Введіть текст відгуку та завантажте картинку.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("action", "add");
+    formData.append("text", newReview.text);
+    formData.append("stars", newReview.stars);
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(`${API_URL}/reviews.php`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert(response.data.message);
+      fetchReviews();
+      setNewReview({ text: "", stars: 5 });
+      setFile(null);
+    } catch (error) {
+      console.error("Error adding review:", error);
+    }
+  };
+
+  const deleteReview = (id) => {
+    axios
+      .post(`${API_URL}/reviews.php`, {
+        action: "delete",
+        id,
+      })
+      .then((response) => {
+        alert(response.data.message);
+        fetchReviews();
+      })
+      .catch((error) => console.error("Error deleting review:", error));
   };
 
   // Successful autorizate
@@ -96,7 +169,7 @@ const AdminPanel = () => {
       <div className={styles.wrapper}>
         <div className={styles.card}>
           <div className={styles["login-wrapper"]}>
-            <p className={styles["login-title"]}>Админ-панель</p>
+            <p className={styles["login-title"]}>Адмін-панель</p>
             <p>Введіть пароль для доступу:</p>
             <input
               type="password"
@@ -190,6 +263,67 @@ const AdminPanel = () => {
         >
           Надіслати повідомлення
         </button>
+      </div>
+      <div className={styles.content}>
+        <div className={styles.form}>
+          <h3>Додати новий відгук</h3>
+          <textarea
+            value={newReview.text}
+            onChange={(e) =>
+              setNewReview((prev) => ({ ...prev, text: e.target.value }))
+            }
+            placeholder="Текст відгуку"
+            rows={4}
+            className={styles.input}
+          ></textarea>
+          <input
+            type="number"
+            min="1"
+            max="5"
+            value={newReview.stars}
+            onChange={(e) =>
+              setNewReview((prev) => ({
+                ...prev,
+                stars: Number(e.target.value),
+              }))
+            }
+            placeholder="Оценка (1-5)"
+            className={styles.input}
+          />
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className={styles.input}
+          />
+          <button
+            onClick={addReview}
+            className={`${styles.button} ${styles["button-success"]}`}
+          >
+            Додати відгук
+          </button>
+        </div>
+      </div>
+      <div className={styles.adminPanel}>
+        <div className={styles.sidebar}>
+          <h3>Відгуки</h3>
+          <ul className={styles.reviewList}>
+            {reviews.map((review) => (
+              <li key={review.id} className={styles.reviewItem}>
+                <div className={styles.stars}>
+                  {"★".repeat(review.stars)}
+                  {"☆".repeat(5 - review.stars)}
+                </div>
+                <p>{review.text}</p>
+                <button
+                  className={`${styles.button} ${styles["button-danger"]}`}
+                  onClick={() => deleteReview(review.id)}
+                >
+                  Видалити
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

@@ -16,7 +16,7 @@ class ReviewManager {
         $this->strategy->addReview($review);
     }
 
-    public function deleteReview(int $id): void {
+    public function deleteReview(string $id): void {
         $this->strategy->deleteReview($id);
     }
 }

@@ -45,6 +45,32 @@ function App() {
               </div>
             }
           />
+          {/* Services */}
+          <Route
+            path="/services"
+            element={
+              <div>
+                <Header />
+                <div className="content">
+                  <Reviews />
+                </div>
+                <Footer />
+              </div>
+            }
+          />
+          {/* Contacts */}
+          <Route
+            path="/contacts"
+            element={
+              <div>
+                <Header />
+                <div className="content">
+                  <Reviews />
+                </div>
+                <Footer />
+              </div>
+            }
+          />
         </Routes>
       </Router>
     </>

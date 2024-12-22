@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 require_once __DIR__ . "/ReviewStorageStrategy.php";
 
 class JsonReviewStrategy implements ReviewStorageStrategy {
@@ -12,19 +13,21 @@ class JsonReviewStrategy implements ReviewStorageStrategy {
         if (!file_exists($this->filePath)) {
             return [];
         }
-        return json_decode(file_get_contents($this->filePath), true) ?? [];
+        $data = file_get_contents($this->filePath);
+        return json_decode($data, true) ?? [];
     }
 
     public function addReview(array $review): void {
         $reviews = $this->getAllReviews();
-        $review['id'] = count($reviews) + 1; // Простая генерация ID
+        $review['id'] = uniqid(); // Генерация уникального ID
         $reviews[] = $review;
-        file_put_contents($this->filePath, json_encode($reviews));
+        file_put_contents($this->filePath, json_encode($reviews, JSON_PRETTY_PRINT));
     }
 
-    public function deleteReview(int $id): void {
+    public function deleteReview($id): void {
         $reviews = $this->getAllReviews();
         $reviews = array_filter($reviews, fn($review) => $review['id'] !== $id);
-        file_put_contents($this->filePath, json_encode(array_values($reviews)));
+        file_put_contents($this->filePath, json_encode(array_values($reviews), JSON_PRETTY_PRINT));
     }
+    
 }
