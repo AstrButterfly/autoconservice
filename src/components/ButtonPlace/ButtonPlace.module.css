@@ -1,0 +1,77 @@
+.buttonWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.button {
+  display: inline-block;
+  transition: all 0.1s ease-in;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  padding: 0.7em 1.7em;
+  box-sizing: border-box;
+  border: 3px solid rgb(212, 46, 18);
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: Actor;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19px;
+  text-align: center;
+  color: white;
+  background-color: transparent;
+}
+
+.button:focus {
+  color: #ffffff;
+  background-color: #b60000;
+}
+
+.button:active {
+  color: #ffffff;
+  background-color: #9c0000;
+  box-shadow: inset 4px 4px 12px #9b0000, inset -4px -4px 12px #7c0000;
+}
+
+.button:before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) scaleY(1) scaleX(1.25);
+  top: 100%;
+  width: 140%;
+  height: 180%;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 50%;
+  display: block;
+  transition: all 0.5s 0.1s cubic-bezier(0.55, 0, 0.1, 1);
+  z-index: -1;
+}
+
+.button2:hover {
+  color: #9d0000;
+  border: 1px solid #009087;
+}
+
+.mapContainer {
+  width: 400px;
+  height: 400px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.openDown {
+  top: 100%; /*header */
+}
+
+.openUp {
+  bottom: 100%; /*footer */
+}
